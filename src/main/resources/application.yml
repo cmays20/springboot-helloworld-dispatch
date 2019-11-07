@@ -1,0 +1,7 @@
+app:
+  defaultName: World
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
