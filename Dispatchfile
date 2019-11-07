@@ -40,7 +40,11 @@ task "build": {
         },
         {
           name: "PLUGIN_ENDPOINT"
-          value: "http://pumpkin-minio.pumpkin"
+          value: "http://s3-us-east-1.pumpkin"
+        },
+        {
+          name: "PLUGIN_REGION"
+          value: "us-east-1"
         }
       ]
     },
