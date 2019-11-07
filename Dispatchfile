@@ -14,13 +14,34 @@ task "build": {
       name: "restore-cache"
       image: "meltwater/drone-cache"
       env: [
-        AWS_ACCESS_KEY_ID: "abcd"
-        AWS_SECRET_ACCESS_KEY: "defghijk"
-        PLUGIN_PATH_STYLE: "true"
-        PLUGIN_MOUNT: "/root/.m2"
-        PLUGIN_RESTORE: "true"
-        PLUGIN_BUCKET: "artifacts"
-        PLUGIN_ENDPOINT: "http://pumpkin-minio.pumpkin"
+        {
+          name: "AWS_ACCESS_KEY_ID"
+          value: "abcd"
+        },
+        {
+          name: "AWS_SECRET_ACCESS_KEY"
+          value: "defghijk"
+        },
+        {
+          name: "PLUGIN_PATH_STYLE"
+          value: "true"
+        },
+        {
+          name: "PLUGIN_MOUNT"
+          value: "/root/.m2"
+        },
+        {
+          name: "PLUGIN_RESTORE"
+          value: "true"
+        },
+        {
+          name: "PLUGIN_BUCKET"
+          value: "artifacts"
+        },
+        {
+          name: "PLUGIN_ENDPOINT"
+          value: "http://pumpkin-minio.pumpkin"
+        }
       ]
     },
     {
