@@ -12,7 +12,8 @@ resource "maven-cache": {
 }
 
 task "build": {
-  inputs: ["src-git"]
+  inputs: ["src-git", "maven-cache"]
+  outputs: ["maven-cache"]
 
   steps: [
     {
