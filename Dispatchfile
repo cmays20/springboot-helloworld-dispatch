@@ -53,7 +53,49 @@ task "build": {
       image: "maven:3.6-jdk-8-slim"
       command: [ "mvn", "verify" ]
       workingDir: "/workspace/src-git"
-    }
+    },
+    {
+          name: "rebuild-cache"
+          image: "meltwater/drone-cache"
+          env: [
+            {
+              name: "AWS_ACCESS_KEY_ID"
+              value: "abcd"
+            },
+            {
+              name: "AWS_SECRET_ACCESS_KEY"
+              value: "defghijk"
+            },
+            {
+              name: "PLUGIN_PATH_STYLE"
+              value: "true"
+            },
+            {
+              name: "PLUGIN_MOUNT"
+              value: "/root/.m2"
+            },
+            {
+              name: "PLUGIN_RESTORE"
+              value: "false"
+            },
+            {
+              name: "PLUGIN_REBUILD"
+              value: "true"
+            },
+            {
+              name: "PLUGIN_BUCKET"
+              value: "artifacts"
+            },
+            {
+              name: "PLUGIN_ENDPOINT"
+              value: "http://s3-us-east-1.pumpkin"
+            },
+            {
+              name: "PLUGIN_REGION"
+              value: "us-east-1"
+            }
+          ]
+        }
   ]
 }
 
