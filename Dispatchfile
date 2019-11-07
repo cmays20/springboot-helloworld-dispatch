@@ -6,6 +6,11 @@ resource "src-git": {
   param revision: "$(context.git.commit)"
 }
 
+resource "maven-cache": {
+  type: "gcs"
+  location: "s3://pumpkin-minio.pumpkin/artifacts"
+}
+
 task "build": {
   inputs: ["src-git"]
 
