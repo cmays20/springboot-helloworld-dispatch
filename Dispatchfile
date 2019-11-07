@@ -9,8 +9,11 @@ resource "src-git": {
 resource "maven-cache": {
   type: "storage"
   param type: "gcs"
-  param location: "s3://pumpkin-minio.pumpkin/artifacts"
-  secrets: "BOTO_CONFIG"
+  param location: "s3://artifacts"
+  secret BOTO_CONFIG: {
+    key: "boto"
+    name: "s3-config"
+  }
 }
 
 task "build": {
