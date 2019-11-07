@@ -10,6 +10,7 @@ resource "maven-cache": {
   type: "storage"
   param type: "gcs"
   param location: "s3://pumpkin-minio.pumpkin/artifacts"
+  secrets: "BOTO_CONFIG"
 }
 
 task "build": {
