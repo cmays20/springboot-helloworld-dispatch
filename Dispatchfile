@@ -7,8 +7,9 @@ resource "src-git": {
 }
 
 resource "maven-cache": {
-  type: "gcs"
-  location: "s3://pumpkin-minio.pumpkin/artifacts"
+  type: "storage"
+  param type: "gcs"
+  param location: "s3://pumpkin-minio.pumpkin/artifacts"
 }
 
 task "build": {
