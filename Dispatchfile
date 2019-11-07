@@ -6,21 +6,24 @@ resource "src-git": {
   param revision: "$(context.git.commit)"
 }
 
-resource "maven-cache": {
-  type: "storage"
-  param type: "gcs"
-  param location: "s3://artifacts"
-  secret BOTO_CONFIG: {
-    key: "boto"
-    name: "s3-config"
-  }
-}
-
 task "build": {
   inputs: ["src-git", "maven-cache"]
   outputs: ["maven-cache"]
 
   steps: [
+    {
+      name: "restore-cache"
+      image: "meltwater/drone-cache"
+      env: {
+        AWS_ACCESS_KEY_ID: "abcd"
+        AWS_SECRET_ACCESS_KEY: "defghijk"
+        PLUGIN_PATH_STYLE: "true"
+        PLUGIN_MOUNT: "/root/.m2"
+        PLUGIN_RESTORE: "true"
+        PLUGIN_BUCKET: "artifacts"
+        PLUGIN_ENDPOINT: "http://pumpkin-minio.pumpkin"
+      }
+    },
     {
       name: "build"
       image: "maven:3.6-jdk-8-slim"
