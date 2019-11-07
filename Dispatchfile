@@ -7,8 +7,7 @@ resource "src-git": {
 }
 
 task "build": {
-  inputs: ["src-git", "maven-cache"]
-  outputs: ["maven-cache"]
+  inputs: ["src-git"]
 
   steps: [
     {
