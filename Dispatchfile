@@ -9,6 +9,13 @@ resource "src-git": {
 task "build": {
   inputs: ["src-git"]
 
+  volumes: [
+    {
+      name: "cache-volume"
+      emptyDir: {}
+    }
+  ]
+
   steps: [
     {
       name: "restore-cache"
@@ -47,12 +54,24 @@ task "build": {
           value: "us-east-1"
         }
       ]
+      volumeMounts: [
+        {
+          name: "cache-volume"
+          mountPath: "/root/.m2"
+        }
+      ]
     },
     {
       name: "build"
       image: "maven:3.6-jdk-8-slim"
       command: [ "mvn", "verify" ]
       workingDir: "/workspace/src-git"
+      volumeMounts: [
+        {
+          name: "cache-volume"
+          mountPath: "/root/.m2"
+        }
+      ]
     },
     {
           name: "rebuild-cache"
@@ -96,6 +115,12 @@ task "build": {
             }
           ]
         }
+        volumeMounts: [
+          {
+            name: "cache-volume"
+            mountPath: "/root/.m2"
+          }
+        ]
   ]
 }
 
