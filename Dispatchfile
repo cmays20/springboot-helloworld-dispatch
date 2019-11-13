@@ -23,11 +23,13 @@ task "build": {
       env: [
         {
           name: "AWS_ACCESS_KEY_ID"
-          value: "abcd"
+          valueFrom secretKeyRef name: "s3-config"
+          valueFrom secretKeyRef key: "AWS_ACCESS_KEY_ID"
         },
         {
           name: "AWS_SECRET_ACCESS_KEY"
-          value: "defghijk"
+          valueFrom secretKeyRef name: "s3-config"
+          valueFrom secretKeyRef key: "AWS_SECRET_ACCESS_KEY"
         },
         {
           name: "PLUGIN_PATH_STYLE"
@@ -79,11 +81,13 @@ task "build": {
       env: [
         {
           name: "AWS_ACCESS_KEY_ID"
-          value: "abcd"
+          valueFrom secretKeyRef name: "s3-config"
+          valueFrom secretKeyRef key: "AWS_ACCESS_KEY_ID"
         },
         {
           name: "AWS_SECRET_ACCESS_KEY"
-          value: "defghijk"
+          valueFrom secretKeyRef name: "s3-config"
+          valueFrom secretKeyRef key: "AWS_SECRET_ACCESS_KEY"
         },
         {
           name: "PLUGIN_PATH_STYLE"
