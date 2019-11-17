@@ -200,6 +200,6 @@ actions: [
   },
   {
     tasks: ["test"]
-    on push branches: ["!master"]
+    on push branches: ["!master","*"]
   }
 ]
