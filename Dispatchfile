@@ -198,7 +198,7 @@ actions: [
   {
     tasks: ["build"]
     on push branches: ["master"]
-  }
+  },
   {
     tasks: ["test"]
     on push branches: ["!master"]
