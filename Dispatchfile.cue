@@ -25,7 +25,7 @@ common_env: [
   },
   {
     name: "PLUGIN_ENDPOINT"
-    value: "http://s3-us-east-1.pumpkin"
+    value: "http://s3-us-east-1.dispatch"
   },
   {
     name: "PLUGIN_REGION"
