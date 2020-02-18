@@ -41,7 +41,7 @@ resource "src-git": {
 
 resource "docker-image": {
   type: "image"
-  param url: "ec2-34-216-126-139.us-west-2.compute.amazonaws.com:30003/cmays/hello-world-dispatch:$(context.build.name)"
+  param url: "registry.cmays-demo.com/cmays/hello-world-dispatch:$(context.build.name)"
   param digest: "$(inputs.resources.docker-image.digest)"
 }
 
