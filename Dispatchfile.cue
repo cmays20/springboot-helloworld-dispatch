@@ -207,7 +207,7 @@ task "deploy": {
       workingDir: "/workspace/gitops-git"
       args: [
         "-git-revision=$(context.git.commit)",
-        "-substitute=imageName=cmays/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
+        "-substitute=imageName=registry.cmays-demo.com/cmays/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
         "--force-push"
       ]
     }
