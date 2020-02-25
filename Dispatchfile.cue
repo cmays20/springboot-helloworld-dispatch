@@ -41,7 +41,7 @@ resource "src-git": {
 
 resource "docker-image": {
   type: "image"
-  param url: "registry.cmays-demo.com/cmays/hello-world-dispatch:$(context.build.name)"
+  param url: "cmays/hello-world-dispatch:$(context.build.name)"
   param digest: "$(inputs.resources.docker-image.digest)"
 }
 
@@ -207,7 +207,7 @@ task "deploy": {
       workingDir: "/workspace/gitops-git"
       args: [
         "-git-revision=$(context.git.commit)",
-        "-substitute=imageName=registry.cmays-demo.com/cmays/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
+        "-substitute=imageName=cmays/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
         "--force-push"
       ]
     }
