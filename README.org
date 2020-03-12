@@ -1,0 +1,62 @@
+# -*- org-src-preserve-indentation: nil; -*-
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t broken-links:nil
+#+options: c:nil creator:nil d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t toc:t
+#+options: todo:t |:t
+#+title: Spring Boot Hello World Application for Dispatch
+#+date: [2020-03-11 Wed]
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 26.2 (Org mode 9.2.3)
+#+SETUPFILE: https://raw.githubusercontent.com/fniessen/org-html-themes/master/setup/theme-readtheorg.setup
+#+PROPERTY: header-args:bash :comments no :shebang #!/usr/bin/env bash :eval never-export
+* Spring Boot Hello-World application
+This app is for demoing CI/CD in Jenkins
+** Dispatch Setup
+*** Fork and clone the 2 repos
+    + The Coder's repo at github.com/cmays20/springboot-helloworld-dispatch
+    + The Operations/GitOps repo at github.com/cmays20/springboot-helloworld-dispatch-gitops
+*** Install Dispatch on the cluster
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      # Do not install if `dispatch` namespace exists
+      kubectl get ns dispatch
+      if [ $? -eq 1 ]; then
+          dispatch init --set global.prometheus.enabled=true --set global.prometheus.release=prometheus-kubeaddons --watch-namespace=dispatch
+      fi
+    #+end_src
+*** Create credentials for Dispatch
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      kubectl -n dispatch get serviceaccount dispatch-sa
+      if [ $? -eq 1 ]; then
+          dispatch serviceaccount create dispatch-sa --namespace dispatch
+      fi
+      kubectl -n dispatch get secret dispatch-sa-basic-auth
+      if [ $? -eq 1 ]; then
+          dispatch login github --user ${GITHUB_USERNAME} --token ${GITHUB_TOKEN} --service-account dispatch-sa --namespace dispatch
+      fi
+      docker login
+      kubectl -n dispatch get secret dispatch-sa-docker-auth
+      if [ $? -eq 1 ]; then
+          dispatch login docker --service-account dispatch-sa --namespace dispatch
+      fi
+      dispatch gitops creds add https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch --username=${GITHUB_USERNAME} --token=${GITHUB_TOKEN} --namespace dispatch
+    #+end_src
+*** Create CI Repository
+    This step creates the webhook in the Developers GitHub repository
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      dispatch ci repository create --service-account dispatch-sa --namespace dispatch
+    #+end_src
+*** Create the App for CD
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      dispatch gitops app create springboot-helloworld-dispatch \
+               --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
+               --service-account dispatch-sa \
+               --namespace dispatch
+    #+end_src
+* Notes and Doubts
+** Questions from the [[file:Dispatchfile]]
+*** Are the AWS secrets required?  Where used?
+*** How does the meltwater cache work?
+*** 
+
