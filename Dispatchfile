@@ -224,3 +224,6 @@ actions: [
     on push branches: ["!master","*"]
   }
 ]
+# Local Variables:
+# mode: json
+# End:
