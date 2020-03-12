@@ -48,12 +48,14 @@ This app is for demoing CI/CD in Jenkins
       dispatch ci repository create --service-account dispatch-sa --namespace dispatch
     #+end_src
 *** Create the App for CD
+    + This may also be done in the Dispatch UI!
     #+begin_src bash :tangle bin/install-springboot-cicd.sh
       dispatch gitops app create springboot-helloworld-dispatch \
                --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
                --service-account dispatch-sa \
                --namespace dispatch
     #+end_src
+
 * Notes and Doubts
 ** Questions from the [[file:Dispatchfile]]
 *** Are the AWS secrets required?  Where used?
