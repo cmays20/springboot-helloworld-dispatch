@@ -13,6 +13,7 @@
 #+PROPERTY: header-args:bash :comments org :shebang #!/usr/bin/env bash :eval never-export
 * Spring Boot Hello-World application
 This app is for demoing CI/CD in Jenkins
+** TODO Add notes about modifying Dispatchfile for your user
 ** Dispatch Setup
 *** Fork and clone the 2 repos
     + The Coder's repo at github.com/cmays20/springboot-helloworld-dispatch
