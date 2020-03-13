@@ -17,6 +17,24 @@ This app is for demoing CI/CD in Jenkins
 *** Fork and clone the 2 repos
     + The Coder's repo at github.com/cmays20/springboot-helloworld-dispatch
     + The Operations/GitOps repo at github.com/cmays20/springboot-helloworld-dispatch-gitops
+*** Create namespace used by the application
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      kubectl create namespace hello-world
+      kubectl label ns hello-world istio-injection=enabled
+      kubectl label ns hello-world ca.istio.io/override="true"
+      cat <<EOF | kubectl apply -f -
+      apiVersion: "networking.istio.io/v1alpha3"
+      kind: "DestinationRule"
+      metadata:
+        name: external
+        namespace: default
+      spec:
+        host: "*.default.svc.cluster.local"
+        trafficPolicy:
+          tls:
+            mode: DISABLE
+      EOF
+    #+end_src
 *** Install Dispatch on the cluster
     #+begin_src bash :tangle bin/install-springboot-cicd.sh
       # Do not install if `dispatch` namespace exists
@@ -55,10 +73,16 @@ This app is for demoing CI/CD in Jenkins
                --service-account dispatch-sa \
                --namespace dispatch
     #+end_src
+** Demo changes
+   Edit [[file:src/main/resources/templates/index.html][index.html template]]
+*** Bring up the application in a web browser
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/hello-world-dispatch
+    #+end_src
 
 * Notes and Doubts
 ** Questions from the [[file:Dispatchfile]]
 *** Are the AWS secrets required?  Where used?
 *** How does the meltwater cache work?
-*** 
+*** How to get the correct ingress URL now that we're using Istio?
 

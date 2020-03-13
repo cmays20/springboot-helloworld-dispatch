@@ -1,4 +1,22 @@
 #!/usr/bin/env bash
+# Create namespace used by the application
+
+kubectl create namespace hello-world
+kubectl label ns hello-world istio-injection=enabled
+kubectl label ns hello-world ca.istio.io/override="true"
+cat <<EOF | kubectl apply -f -
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: external
+  namespace: default
+spec:
+  host: "*.default.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+EOF
+
 # Install Dispatch on the cluster
 
 # Do not install if `dispatch` namespace exists
