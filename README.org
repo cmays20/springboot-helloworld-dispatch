@@ -10,7 +10,7 @@
 #+exclude_tags: noexport
 #+creator: Emacs 26.2 (Org mode 9.2.3)
 #+SETUPFILE: https://raw.githubusercontent.com/fniessen/org-html-themes/master/setup/theme-readtheorg.setup
-#+PROPERTY: header-args:bash :comments no :shebang #!/usr/bin/env bash :eval never-export
+#+PROPERTY: header-args:bash :comments org :shebang #!/usr/bin/env bash :eval never-export
 * Spring Boot Hello-World application
 This app is for demoing CI/CD in Jenkins
 ** Dispatch Setup
