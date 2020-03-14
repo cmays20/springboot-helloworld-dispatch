@@ -4,18 +4,6 @@
 kubectl create namespace hello-world
 kubectl label ns hello-world istio-injection=enabled
 kubectl label ns hello-world ca.istio.io/override="true"
-cat <<EOF | kubectl apply -f -
-apiVersion: "networking.istio.io/v1alpha3"
-kind: "DestinationRule"
-metadata:
-  name: external
-  namespace: default
-spec:
-  host: "*.default.svc.cluster.local"
-  trafficPolicy:
-    tls:
-      mode: DISABLE
-EOF
 
 # Install Dispatch on the cluster
 
@@ -54,3 +42,7 @@ dispatch gitops app create springboot-helloworld-dispatch \
          --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
          --service-account dispatch-sa \
          --namespace dispatch
+
+# Bring up the application in a web browser
+
+echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/hello-world-dispatch
