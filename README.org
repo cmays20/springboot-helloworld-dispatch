@@ -80,9 +80,13 @@ This app is for demoing CI/CD in Jenkins
       echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/hello-world-dispatch
     #+end_src
 
-* Notes and Doubts
-** Questions from the [[file:Dispatchfile]]
-*** Are the AWS secrets required?  Where used?
-*** How does the meltwater cache work?
-*** How to get the correct ingress URL now that we're using Istio?
+* Notes 
+
+** About this document
+   The script [[file:bin/install-springboot-cicd.sh][bin/install-springboot-cicd.sh]] can be generated from this document using
+   =M-x org-babel-tangle= in Emacs, or running the following command on a system with
+   Emacs installed
+   #+begin_src bash
+     emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
+   #+end_src
 
