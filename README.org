@@ -13,28 +13,27 @@
 #+PROPERTY: header-args:bash :comments org :shebang #!/usr/bin/env bash :eval never-export
 * Spring Boot Hello-World application
 This app is for demoing CI/CD in Jenkins
-** TODO Add notes about modifying Dispatchfile for your user
 ** Dispatch Setup
 *** Fork and clone the 2 repos
-    + The Coder's repo at github.com/cmays20/springboot-helloworld-dispatch
-    + The Operations/GitOps repo at github.com/cmays20/springboot-helloworld-dispatch-gitops
+    + The Coder's repo at [[https://github.com/cmays20/springboot-helloworld-dispatch][github.com/cmays20/springboot-helloworld-dispatch]]
+    + The Operations/GitOps repo at [[https://github.com/cmays20/springboot-helloworld-dispatch-gitops][github.com/cmays20/springboot-helloworld-dispatch-gitops]]
+*** Add your GitHub and DockerHub user
+    Edit the [[file:Dispatchfile][Dispatchfile]] and replace the variable values at the top of the file with your
+    user names for GitHub and DockerHub
+
+    Example:
+    #+begin_src json
+      // docker_user:: "<YOUR_DOCKERHUB_USERNAME>"
+      // github_user:: "<YOUR_GITHUB_USERNAME>"
+
+      docker_user:: "gregoryg"
+      github_user:: "gregoryg"
+    #+end_src
 *** Create namespace used by the application
     #+begin_src bash :tangle bin/install-springboot-cicd.sh
       kubectl create namespace hello-world
       kubectl label ns hello-world istio-injection=enabled
       kubectl label ns hello-world ca.istio.io/override="true"
-      cat <<EOF | kubectl apply -f -
-      apiVersion: "networking.istio.io/v1alpha3"
-      kind: "DestinationRule"
-      metadata:
-        name: external
-        namespace: default
-      spec:
-        host: "*.default.svc.cluster.local"
-        trafficPolicy:
-          tls:
-            mode: DISABLE
-      EOF
     #+end_src
 *** Install Dispatch on the cluster
     #+begin_src bash :tangle bin/install-springboot-cicd.sh
