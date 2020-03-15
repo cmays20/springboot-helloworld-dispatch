@@ -1,7 +1,7 @@
 #!cue
 
-docker_user:: "<YOUR_DOCKERHUB_USERNAME>"
-github_user:: "<YOUR_GITHUB_USERNAME>"
+docker_user:: "cmays"
+github_user:: "cmays20"
 
 common_env: [
   {
