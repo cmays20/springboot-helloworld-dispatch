@@ -1,0 +1,92 @@
+# -*- org-src-preserve-indentation: nil; -*-
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t broken-links:nil
+#+options: c:nil creator:nil d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+options: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t toc:t
+#+options: todo:t |:t
+#+title: Spring Boot Hello World Application for Dispatch
+#+date: [2020-03-11 Wed]
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 26.2 (Org mode 9.2.3)
+#+SETUPFILE: https://raw.githubusercontent.com/fniessen/org-html-themes/master/setup/theme-readtheorg.setup
+#+PROPERTY: header-args:bash :comments org :shebang #!/usr/bin/env bash :eval never-export
+* Spring Boot Hello-World application
+This app is for demoing CI/CD in Jenkins
+** Dispatch Setup
+*** Fork and clone the 2 repos
+    + The Coder's repo at [[https://github.com/cmays20/springboot-helloworld-dispatch][github.com/cmays20/springboot-helloworld-dispatch]]
+    + The Operations/GitOps repo at [[https://github.com/cmays20/springboot-helloworld-dispatch-gitops][github.com/cmays20/springboot-helloworld-dispatch-gitops]]
+*** Add your GitHub and DockerHub user
+    Edit the [[file:Dispatchfile][Dispatchfile]] and replace the variable values at the top of the file with your
+    user names for GitHub and DockerHub
+
+    Example:
+    #+begin_src json
+      // docker_user:: "<YOUR_DOCKERHUB_USERNAME>"
+      // github_user:: "<YOUR_GITHUB_USERNAME>"
+
+      docker_user:: "gregoryg"
+      github_user:: "gregoryg"
+    #+end_src
+*** Create namespace used by the application
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      kubectl create namespace hello-world
+      kubectl label ns hello-world istio-injection=enabled
+      kubectl label ns hello-world ca.istio.io/override="true"
+    #+end_src
+*** Install Dispatch on the cluster
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      # Do not install if `dispatch` namespace exists
+      kubectl get ns dispatch
+      if [ $? -eq 1 ]; then
+          dispatch init --set global.prometheus.enabled=true --set global.prometheus.release=prometheus-kubeaddons --watch-namespace=dispatch
+      fi
+    #+end_src
+*** Create credentials for Dispatch
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      kubectl -n dispatch get serviceaccount dispatch-sa
+      if [ $? -eq 1 ]; then
+          dispatch serviceaccount create dispatch-sa --namespace dispatch
+      fi
+      kubectl -n dispatch get secret dispatch-sa-basic-auth
+      if [ $? -eq 1 ]; then
+          dispatch login github --user ${GITHUB_USERNAME} --token ${GITHUB_TOKEN} --service-account dispatch-sa --namespace dispatch
+      fi
+      docker login
+      kubectl -n dispatch get secret dispatch-sa-docker-auth
+      if [ $? -eq 1 ]; then
+          dispatch login docker --service-account dispatch-sa --namespace dispatch
+      fi
+      dispatch gitops creds add https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch --username=${GITHUB_USERNAME} --token=${GITHUB_TOKEN} --namespace dispatch
+    #+end_src
+*** Create CI Repository
+    This step creates the webhook in the Developers GitHub repository
+    This may also be done in the Dispatch UI!
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      dispatch ci repository create --service-account dispatch-sa --namespace dispatch
+    #+end_src
+*** Create the App for CD
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      dispatch gitops app create springboot-helloworld-dispatch \
+               --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
+               --service-account dispatch-sa \
+               --namespace dispatch
+    #+end_src
+** Demo changes
+   Edit [[file:src/main/resources/templates/index.html][index.html template]]
+*** Bring up the application in a web browser
+    #+begin_src bash :tangle bin/install-springboot-cicd.sh
+      echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/hello-world-dispatch
+    #+end_src
+
+* Notes 
+
+** About this document
+   The script [[file:bin/install-springboot-cicd.sh][bin/install-springboot-cicd.sh]] can be generated from this document using
+   =M-x org-babel-tangle= in Emacs, or running the following command on a system with
+   Emacs installed
+   #+begin_src bash
+     emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
+   #+end_src
+
