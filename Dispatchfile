@@ -1,7 +1,7 @@
 #!cue
 
-//docker_user: "cmays"
-//github_user: "cmays20"
+docker_user: "cmays"
+github_user: "cmays20"
 
 common_env: [
   {
@@ -44,13 +44,13 @@ resource "src-git": {
 
 resource "docker-image": {
   type: "image"
-  param url: "cmays/hello-world-dispatch:$(context.build.name)"
+  param url: docker_user + "/hello-world-dispatch:$(context.build.name)"
   param digest: "$(inputs.resources.docker-image.digest)"
 }
 
 resource "gitops-git": {
   type: "git"
-  param url: "https://github.com/cmays20/springboot-helloworld-dispatch-gitops"
+  param url: "https://github.com/" + github_user + "/springboot-helloworld-dispatch-gitops"
 }
 
 task "test": {
@@ -210,7 +210,7 @@ task "deploy": {
       workingDir: "/workspace/gitops-git"
       args: [
         "-git-revision=$(context.git.commit)",
-        "-substitute=imageName=cmays/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
+        "-substitute=imageName=" + docker_user + "/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
         "--force-push"
       ]
     }
