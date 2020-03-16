@@ -28,7 +28,7 @@ kubectl -n dispatch get secret dispatch-sa-docker-auth
 if [ $? -eq 1 ]; then
     dispatch login docker --service-account dispatch-sa --namespace dispatch
 fi
-dispatch gitops creds add https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch --username=${GITHUB_USERNAME} --token=${GITHUB_TOKEN} --namespace dispatch
+#dispatch gitops creds add https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch --username=${GITHUB_USERNAME} --token=${GITHUB_TOKEN} --namespace dispatch
 
 # Create CI Repository
 #     This step creates the webhook in the Developers GitHub repository
@@ -39,7 +39,7 @@ dispatch ci repository create --service-account dispatch-sa --namespace dispatch
 # Create the App for CD
 
 dispatch gitops app create springboot-helloworld-dispatch \
-         --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops-ab \
+         --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
          --service-account dispatch-sa \
          --namespace dispatch
 
