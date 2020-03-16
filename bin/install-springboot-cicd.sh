@@ -39,7 +39,7 @@ dispatch ci repository create --service-account dispatch-sa --namespace dispatch
 # Create the App for CD
 
 dispatch gitops app create springboot-helloworld-dispatch \
-         --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops \
+         --repository=https://github.com/${GITHUB_USERNAME}/springboot-helloworld-dispatch-gitops-ab \
          --service-account dispatch-sa \
          --namespace dispatch
 

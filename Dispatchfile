@@ -50,8 +50,7 @@ resource "docker-image": {
 
 resource "gitops-git": {
   type: "git"
-  param url: "https://github.com/" + github_user + "/springboot-helloworld-dispatch-gitops"
-  param revision: "Istio-AB"
+  param url: "https://github.com/" + github_user + "/springboot-helloworld-dispatch-gitops-ab"
 }
 
 task "test": {
@@ -210,7 +209,7 @@ task "deploy": {
       image: "mesosphere/update-gitops-repo:v1.0"
       workingDir: "/workspace/gitops-git"
       args: [
-        "-git-revision=Istio-AB",
+        "-git-revision=$(context.git.commit)",
         "-substitute=imageName=" + docker_user + "/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
         "--force-push"
       ]
