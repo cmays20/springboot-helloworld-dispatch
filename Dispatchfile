@@ -51,6 +51,7 @@ resource "docker-image": {
 resource "gitops-git": {
   type: "git"
   param url: "https://github.com/" + github_user + "/springboot-helloworld-dispatch-gitops"
+  param revision: "Istio-AB"
 }
 
 task "test": {
