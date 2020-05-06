@@ -8,3 +8,6 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+spring:
+  application:
+    name: hello-world
