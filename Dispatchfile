@@ -1,7 +1,7 @@
 #!cue
 
-docker_user: "cmays"
-github_user: "cmays20"
+docker_user: "d2iqshadowbq"
+github_user: "d2iq-shadowbq"
 
 common_env: [
   {
