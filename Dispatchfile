@@ -225,6 +225,9 @@ actions: [
   {
     tasks: ["test"]
     on push branches: ["!master","*"]
+  },
+  {
+    on chatops: ["/sonar"]
   }
 ]
 // Local Variables:
