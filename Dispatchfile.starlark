@@ -19,7 +19,7 @@ common_env = [
 git = git_resource("src-git")
 gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
 image_name = image_resource("docker_image",url=docker_user + "/hello-world-dispatch")
-tag = $(context.build.name)
+tag = "$(context.build.name)"
 
 #Setup re-usable steps
 restore_cache = k8s.corev1.Container(
