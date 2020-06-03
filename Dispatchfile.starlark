@@ -18,6 +18,7 @@ common_env = [
 
 git = git_resource("src-git")
 gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
+image_name = image_resource("image-{}".format(task_name),url=docker_user + "/hello-world-dispatch")
 
 #Setup re-usable steps
 restore_cache = k8s.corev1.Container(
@@ -62,7 +63,7 @@ docker_build = k8s.corev1.Container(
             name="build_image",
             image="gcr.io/kaniko-project/executor:v0.14.0",
             args=args,
-            workingDir=git_checkout_dir(git_name)
+            workingDir=git_checkout_dir(git)
         )
 task("build",
   inputs=[git],
