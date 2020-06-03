@@ -54,7 +54,7 @@ task("test",
       rebuild_cache])
 
 args = [
-        "--destination=$(resources.outputs.{}.url):{}".format(image_name, tag),
+        "--destination=$(resources.outputs.{}.url):{}".format(image_name, $(context.build.name)),
         "--context={}".format(context),
         "--oci-layout-path=$(resources.outputs.{}.path)".format(image_name),
         "--dockerfile={}".format(dockerfile)
