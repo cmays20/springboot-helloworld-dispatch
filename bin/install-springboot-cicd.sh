@@ -34,7 +34,7 @@ fi
 #     This step creates the webhook in the Developers GitHub repository
 #     This may also be done in the Dispatch UI!
 
-dispatch ci repository create --service-account dispatch-sa --namespace dispatch
+dispatch ci repository create --service-account dispatch-sa --namespace dispatch --dispatchfile-path Dispatchfile.starlark
 
 # Create the App for CD
 

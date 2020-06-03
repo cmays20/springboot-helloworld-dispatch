@@ -1,0 +1,86 @@
+#!mesosphere/dispatch-starlark:v0.5
+
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "git_resource", "push")
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/k8s@master", "secret_var")
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/kaniko@master", "kaniko")
+
+docker_user = "cmays"
+github_user = "cmays20"
+
+common_env = [
+  k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secret_var("s3-config","AWS_ACCESS_KEY_ID")),
+  k8s.corev1.EnvVar(name="AWS_SECRET_ACCESS_KEY", valueFrom=secret_var("s3-config","AWS_SECRET_ACCESS_KEY")),
+  k8s.corev1.EnvVar(name="PLUGIN_PATH_STYLE", value="true"),
+  k8s.corev1.EnvVar(name="PLUGIN_MOUNT", value="/root/.m2"),
+  k8s.corev1.EnvVar(name="PLUGIN_BUCKET", value="artifacts"),
+  k8s.corev1.EnvVar(name="PLUGIN_ENDPOINT", value="http://s3-us-east-1.dispatch"),
+  k8s.corev1.EnvVar(name="PLUGIN_REGION", value="us-east-1")]
+
+git = git_resource("src-git")
+
+#Setup re-usable steps
+restore_cache = k8s.corev1.Container(
+                      name="restore-cache",
+                      image="meltwater/drone-cache",
+                      env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="true")],
+                      volumeMounts=[k8s.corev1.VolumeMount(
+                        name="cache-volume",
+                        mountPath="/root/.m2")])
+
+rebuild_cache = k8s.corev1.Container(
+                      name="rebuild-cache",
+                      image="meltwater/drone-cache",
+                      env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="false"),
+                        k8s.corev1.EnvVar(name="PLUGIN_REBUILD", value="true")],
+                      volumeMounts=[k8s.corev1.VolumeMount(
+                        name="cache-volume",
+                        mountPath="/root/.m2")])
+
+# Compile and run Unit Tests using Maven
+task("test",
+  inputs=[git],
+  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  steps=[restore_cache,
+    k8s.corev1.Container(
+      name="test",
+      image="maven:3.6-jdk-8-slim",
+      workingDir="/workspace/src-git",
+      volumeMounts=[k8s.corev1.VolumeMount(
+        name="cache-volume",
+        mountPath="/root/.m2")],
+      command=["mvn","test"]),
+      rebuild_cache])
+
+# Compile and run Unit Tests using Maven
+task("build",
+  inputs=[git],
+  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  steps=[
+    restore_cache,
+    k8s.corev1.Container(
+      name="build",
+      image="maven:3.6-jdk-8-slim",
+      workingDir="/workspace/src-git",
+      volumeMounts=[k8s.corev1.VolumeMount(
+        name="cache-volume",
+        mountPath="/root/.m2")],
+      command=["mvn","verify"]),
+    rebuild_cache])
+
+# Build and push the docker image
+simple_docker = kaniko("build-image",git, docker_user + "/hello-world-dispatch")
+
+task("deploy",
+  inputs=["image-build-image", "gitops-git"],
+  steps=[k8s.corev1.Container(
+    name="update-gitops-repo",
+    image="mesosphere/update-gitops-repo:v1.0",
+    workingDir="/workspace/gitops-git",
+    args=[
+      "-git-revision=$(context.git.commit)",
+      "-substitute=imageName=" + docker_user + "/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
+      "--force-push"]
+  )])
+
+action(tasks=["test"], on=push(branches=["!master","*"]))
+action(tasks=["build","build-image","deploy"], on=push(branches=["master"]))
