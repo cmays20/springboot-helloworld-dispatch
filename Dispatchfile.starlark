@@ -65,7 +65,7 @@ docker_build = k8s.corev1.Container(
             name="build_image",
             image="gcr.io/kaniko-project/executor:v0.14.0",
             args=args,
-            workingDir=git_checkout_dir(git)
+            workingDir="/workspace/src-git"
         )
 task("build",
   inputs=[git],
