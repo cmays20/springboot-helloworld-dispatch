@@ -52,7 +52,18 @@ task("test",
       command=["mvn","test"]),
       rebuild_cache])
 
-# Compile and run Unit Tests using Maven
+args = [
+        "--destination=$(resources.outputs.{}.url):{}".format(image_name, tag),
+        "--context={}".format(context),
+        "--oci-layout-path=$(resources.outputs.{}.path)".format(image_name),
+        "--dockerfile={}".format(dockerfile)
+    ]
+docker_build = k8s.corev1.Container(
+            name="build_image",
+            image="gcr.io/kaniko-project/executor:v0.14.0",
+            args=args,
+            workingDir=git_checkout_dir(git_name)
+        )
 task("build",
   inputs=[git],
   volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
@@ -66,10 +77,12 @@ task("build",
         name="cache-volume",
         mountPath="/root/.m2")],
       command=["mvn","verify"]),
-    rebuild_cache])
+    rebuild_cache,
+    docker_build])
 
 # Build and push the docker image
-simple_docker = kaniko("build-image",git, docker_user + "/hello-world-dispatch")
+
+#simple_docker = kaniko("build-image",git, docker_user + "/hello-world-dispatch")
 
 task("deploy",
   inputs=["image-build-image", gitops],
@@ -84,4 +97,4 @@ task("deploy",
   )])
 
 action(tasks=["test"], on=push(branches=["!master","*"]))
-action(tasks=["build","build-image","deploy"], on=push(branches=["master"]))
+action(tasks=["build","deploy"], on=push(branches=["master"]))
