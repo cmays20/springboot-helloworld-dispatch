@@ -93,7 +93,7 @@ task("deploy",
   steps=[k8s.corev1.Container(
     name="update-gitops-repo",
     image="mesosphere/update-gitops-repo:v1.0",
-    workingDir="/workspace/gitops-git",
+    workingDir="/workspace/src-gitops",
     args=[
       "-git-revision=$(context.git.commit)",
       "-substitute=imageName=" + docker_user + "/hello-world-dispatch@$(inputs.resources.docker-image.digest)",
