@@ -69,6 +69,7 @@ docker_build = k8s.corev1.Container(
         )
 task("build",
   inputs=[git],
+  outputs=[image_name,]
   volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
   steps=[
     restore_cache,
