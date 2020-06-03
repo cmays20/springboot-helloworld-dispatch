@@ -57,7 +57,7 @@ task("test",
 
 args = [
         "--destination=$(resources.outputs.{}.url):{}".format(image_name, tag),
-        "--context="/workspace/src-git",
+        "--context=/workspace/src-git",
         "--oci-layout-path=$(resources.outputs.{}.path)".format(image_name),
         "--dockerfile={}".format(dockerfile)
     ]
