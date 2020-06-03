@@ -17,6 +17,7 @@ common_env = [
   k8s.corev1.EnvVar(name="PLUGIN_REGION", value="us-east-1")]
 
 git = git_resource("src-git")
+gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
 
 #Setup re-usable steps
 restore_cache = k8s.corev1.Container(
