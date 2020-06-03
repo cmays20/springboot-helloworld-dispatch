@@ -18,7 +18,7 @@ common_env = [
 
 git = git_resource("src-git")
 gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
-image_name = image_resource("docker_image",url=docker_user + "/hello-world-dispatch")
+image_name = image_resource("docker-image",url=docker_user + "/hello-world-dispatch")
 tag = "$(context.build.name)"
 
 
@@ -62,7 +62,7 @@ args = [
         "--dockerfile=/workspace/src-git/Dockerfile"
     ]
 docker_build = k8s.corev1.Container(
-            name="build_image",
+            name="build-image",
             image="gcr.io/kaniko-project/executor:v0.14.0",
             args=args,
             workingDir="/workspace/src-git"
