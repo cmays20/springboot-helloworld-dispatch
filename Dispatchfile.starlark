@@ -88,7 +88,7 @@ task("build",
 #simple_docker = kaniko("build-image",git, docker_user + "/hello-world-dispatch")
 
 task("deploy",
-  inputs=["image-build-image", gitops],
+  inputs=[image_name, gitops],
   steps=[k8s.corev1.Container(
     name="update-gitops-repo",
     image="mesosphere/update-gitops-repo:v1.0",
