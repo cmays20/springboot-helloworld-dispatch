@@ -59,7 +59,7 @@ args = [
         "--destination=$(resources.outputs.{}.url):{}".format(image_name, tag),
         "--context=/workspace/src-git",
         "--oci-layout-path=$(resources.outputs.{}.path)".format(image_name),
-        "--dockerfile={}".format(dockerfile)
+        "--dockerfile=/workspace/src-git/Dockerfile"
     ]
 docker_build = k8s.corev1.Container(
             name="build_image",
