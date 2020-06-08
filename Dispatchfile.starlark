@@ -118,4 +118,4 @@ task("sonar",
 
 action(tasks=["test"], on=push(branches=["!master","*"]))
 action(tasks=["build","deploy"], on=push(branches=["master"]))
-action(tasks=["sonar"], on=pull_request(chatops=["sonar"])
+action(tasks=["sonar"], on=pull_request(chatops=["sonar"]))
