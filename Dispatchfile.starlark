@@ -113,7 +113,7 @@ task("sonar",
         volumeMounts=[k8s.corev1.VolumeMount(
           name="cache-volume",
           mountPath="/root/.m2")],
-        command=["mvn","verify", "sonar:sonar -Dsonar.host.url=" + sonar_url ]),
+        command=["mvn","verify", "sonar:sonar", "-Dsonar.host.url=" + sonar_url ]),
       rebuild_cache])
 
 action(tasks=["test"], on=push(branches=["!master","*"]))
