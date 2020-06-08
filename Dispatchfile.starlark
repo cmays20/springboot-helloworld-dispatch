@@ -1,11 +1,12 @@
 #!mesosphere/dispatch-starlark:v0.5
 
-load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "git_resource", "image_resource", "push")
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "git_resource", "image_resource", "push", "pull_request")
 load("github.com/mesosphere/dispatch-catalog/starlark/stable/k8s@master", "secret_var")
 load("github.com/mesosphere/dispatch-catalog/starlark/stable/kaniko@master", "kaniko")
 
 docker_user = "cmays"
 github_user = "cmays20"
+sonar_url = "https://sonar.cmays-lab.com/"
 
 common_env = [
   k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secret_var("s3-config","AWS_ACCESS_KEY_ID")),
@@ -100,5 +101,21 @@ task("deploy",
       "--force-push"]
   )])
 
+task("sonar",
+  inputs=[git],
+  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  steps=[
+      restore_cache,
+      k8s.corev1.Container(
+        name="sonar",
+        image="maven:3.6-jdk-8-slim",
+        workingDir="/workspace/src-git",
+        volumeMounts=[k8s.corev1.VolumeMount(
+          name="cache-volume",
+          mountPath="/root/.m2")],
+        command=["mvn","verify sonar:sonar -Dsonar.host.url=" + sonar_url ]),
+      rebuild_cache])
+
 action(tasks=["test"], on=push(branches=["!master","*"]))
 action(tasks=["build","deploy"], on=push(branches=["master"]))
+action(tasks=["sonar"], on=pull_request(chatops=["sonar"])
