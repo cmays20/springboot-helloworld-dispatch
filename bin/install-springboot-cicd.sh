@@ -3,7 +3,8 @@
 
 kubectl create namespace hello-world
 kubectl label ns hello-world istio-injection=enabled
-kubectl label ns hello-world ca.istio.io/override="true"
+#The below is no longer needed with Istio 1.5 that comes in Konvoy 1.5 beta 7 and beyond
+#kubectl label ns hello-world ca.istio.io/override="true"
 
 # Install Dispatch on the cluster
 
@@ -45,4 +46,4 @@ dispatch gitops app create springboot-helloworld-dispatch \
 
 # Bring up the application in a web browser
 
-echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/hello-world-dispatch
+echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/
