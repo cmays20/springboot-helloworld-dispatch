@@ -16,7 +16,7 @@ common_env = [
   k8s.corev1.EnvVar(name="PLUGIN_BUCKET", value="artifacts"),
   k8s.corev1.EnvVar(name="PLUGIN_ENDPOINT", value="http://s3-us-east-1.dispatch"),
   k8s.corev1.EnvVar(name="PLUGIN_REGION", value="us-east-1"),
-  k8s.corev1.EnvVar(name="CACHE_KEY", value="us-east-1")]
+  k8s.corev1.EnvVar(name="PLUGIN_CACHE_KEY", value="hello-world")]
 
 git = git_resource("src-git")
 gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
