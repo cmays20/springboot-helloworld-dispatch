@@ -15,7 +15,8 @@ common_env = [
   k8s.corev1.EnvVar(name="PLUGIN_MOUNT", value="/root/.m2"),
   k8s.corev1.EnvVar(name="PLUGIN_BUCKET", value="artifacts"),
   k8s.corev1.EnvVar(name="PLUGIN_ENDPOINT", value="http://s3-us-east-1.dispatch"),
-  k8s.corev1.EnvVar(name="PLUGIN_REGION", value="us-east-1")]
+  k8s.corev1.EnvVar(name="PLUGIN_REGION", value="us-east-1"),
+  k8s.corev1.EnvVar(name="CACHE_KEY", value="us-east-1")]
 
 git = git_resource("src-git")
 gitops = git_resource("src-gitops",url="https://github.com/cmays20/springboot-helloworld-dispatch-gitops",revision="master")
@@ -29,7 +30,7 @@ restore_cache = k8s.corev1.Container(
                       image="meltwater/drone-cache",
                       env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="true")],
                       volumeMounts=[k8s.corev1.VolumeMount(
-                        name="cache-volume",
+                        name="cache-minio",
                         mountPath="/root/.m2")])
 
 rebuild_cache = k8s.corev1.Container(
@@ -38,20 +39,20 @@ rebuild_cache = k8s.corev1.Container(
                       env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="false"),
                         k8s.corev1.EnvVar(name="PLUGIN_REBUILD", value="true")],
                       volumeMounts=[k8s.corev1.VolumeMount(
-                        name="cache-volume",
+                        name="cache-minio",
                         mountPath="/root/.m2")])
 
 # Compile and run Unit Tests using Maven
 task("test",
   inputs=[git],
-  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  volumes=[k8s.corev1.Volume(name="cache-minio", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
   steps=[restore_cache,
     k8s.corev1.Container(
       name="test",
       image="maven:3.6-jdk-8-slim",
       workingDir="/workspace/src-git",
       volumeMounts=[k8s.corev1.VolumeMount(
-        name="cache-volume",
+        name="cache-minio",
         mountPath="/root/.m2")],
       command=["mvn","test"]),
       rebuild_cache])
@@ -71,7 +72,7 @@ docker_build = k8s.corev1.Container(
 task("build",
   inputs=[git],
   outputs=[image_name],
-  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  volumes=[k8s.corev1.Volume(name="cache-minio", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
   steps=[
     restore_cache,
     k8s.corev1.Container(
@@ -79,7 +80,7 @@ task("build",
       image="maven:3.6-jdk-8-slim",
       workingDir="/workspace/src-git",
       volumeMounts=[k8s.corev1.VolumeMount(
-        name="cache-volume",
+        name="cache-minio",
         mountPath="/root/.m2")],
       command=["mvn","verify"]),
     rebuild_cache,
@@ -103,7 +104,7 @@ task("deploy",
 
 task("sonar",
   inputs=[git],
-  volumes=[k8s.corev1.Volume(name="cache-volume", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
+  volumes=[k8s.corev1.Volume(name="cache-minio", volumeSource=k8s.corev1.VolumeSource(emptyDir=k8s.corev1.EmptyDirVolumeSource()))],
   steps=[
       restore_cache,
       k8s.corev1.Container(
@@ -111,7 +112,7 @@ task("sonar",
         image="maven:3.6-jdk-8-slim",
         workingDir="/workspace/src-git",
         volumeMounts=[k8s.corev1.VolumeMount(
-          name="cache-volume",
+          name="cache-minio",
           mountPath="/root/.m2")],
         command=["mvn","verify", "sonar:sonar", "-Dsonar.host.url=" + sonar_url ]),
       rebuild_cache])
