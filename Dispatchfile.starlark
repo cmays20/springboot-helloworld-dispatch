@@ -7,6 +7,7 @@ load("github.com/mesosphere/dispatch-catalog/starlark/stable/kaniko@master", "ka
 docker_user = "cmays"
 github_user = "cmays20"
 sonar_url = "https://sonar.cmays-lab.com/"
+drone_image = "meltwater/drone-cache:1.0.4"
 
 common_env = [
   k8s.corev1.EnvVar(name="AWS_ACCESS_KEY_ID", valueFrom=secret_var("s3-config","AWS_ACCESS_KEY_ID")),
@@ -27,7 +28,7 @@ tag = "$(context.build.name)"
 #Setup re-usable steps
 restore_cache = k8s.corev1.Container(
                       name="restore-cache",
-                      image="meltwater/drone-cache",
+                      image=drone_image,
                       env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="true")],
                       volumeMounts=[k8s.corev1.VolumeMount(
                         name="cache-minio",
@@ -35,7 +36,7 @@ restore_cache = k8s.corev1.Container(
 
 rebuild_cache = k8s.corev1.Container(
                       name="rebuild-cache",
-                      image="meltwater/drone-cache",
+                      image=drone_image,
                       env=common_env + [k8s.corev1.EnvVar(name="PLUGIN_RESTORE", value="false"),
                         k8s.corev1.EnvVar(name="PLUGIN_REBUILD", value="true")],
                       volumeMounts=[k8s.corev1.VolumeMount(
