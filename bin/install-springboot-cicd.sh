@@ -44,6 +44,10 @@ dispatch gitops app create springboot-helloworld-dispatch \
          --service-account dispatch-sa \
          --namespace dispatch
 
+#kubectl apply -f letsencrypt-clusterissuer.yaml
+#kubectl apply -f sonar-certificate.yam
+#dispatch gitops app create sonarqube --repository=https://github.com/${GITHUB_USERNAME}/sonar-gitops/ --service-account dispatch-sa --namespace dispatch --dest-namespace sonarqube
+
 # Bring up the application in a web browser
 
 echo http://$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')/
