@@ -46,7 +46,7 @@ dispatch gitops app create springboot-helloworld-dispatch \
 
 #kubectl apply -f letsencrypt-clusterissuer.yaml
 #kubectl create ns sonarqube
-#kubectl apply -f sonar-certificate.yam
+#kubectl apply -f sonar-certificate.yaml
 #dispatch gitops app create sonarqube --repository=https://github.com/${GITHUB_USERNAME}/sonar-gitops/ --service-account dispatch-sa --namespace dispatch --dest-namespace sonarqube
 
 # Bring up the application in a web browser
