@@ -22,7 +22,7 @@ if [ $? -eq 1 ]; then
 fi
 kubectl -n dispatch get secret dispatch-sa-basic-auth
 if [ $? -eq 1 ]; then
-    dispatch login github --user ${GITHUB_USERNAME} --token ${GITHUB_TOKEN} --service-account dispatch-sa --namespace dispatch
+    dispatch login github --user ${GITHUB_USERNAME} --token ${GITHUB_TOKEN} --service-account dispatch-sa --namespace dispatch --insecure-webhook-skip-tls-verify
 fi
 docker login
 kubectl -n dispatch get secret dispatch-sa-docker-auth
