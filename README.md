@@ -26,6 +26,9 @@ You don't need to do it this way, of course you can just run these export comman
 The Dispatch documentation covers creating a token and which permissions it needs: https://docs.d2iq.com/ksphere/dispatch/1.2/tutorials/ci_tutorials/credentials/.
 Click on the GitHub black text to expand the instructions under step 1 of "Setting up Github credentials".
 
+### 1.4 Install Sonarqube
+Use the following repository as a guide to install Sonarqube using Argo and GitOps: https://github.com/cmays20/sonar-gitops
+
 ## 2. Demo Setup
 
 ### 2.1 Setup Script
