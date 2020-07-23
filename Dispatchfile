@@ -1,6 +1,7 @@
 #!mesosphere/dispatch-starlark:v0.6
 
-load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "git_resource", "image_resource", "push", "pull_request")
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "image_resource", "push", "pull_request")
+load("github.com/mesosphere/dispatch-catalog/starlark/stable/pipeline@master", "git_resource")
 load("github.com/mesosphere/dispatch-catalog/starlark/stable/k8s@master", "secret_var")
 load("github.com/mesosphere/dispatch-catalog/starlark/stable/kaniko@master", "kaniko")
 
